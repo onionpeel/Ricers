@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "^3.4.1",
+    "@truffle/hdwallet-provider": "^1.2.4"
+  }
 }
