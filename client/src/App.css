@@ -1,8 +1,9 @@
 body {
     background-image: url("./images/garage.jpg");
-    background-size: cover;
+    background-size: 100%;
     position:absolute;
     background-repeat: no-repeat;
+
 }
 
 .table {
@@ -26,15 +27,16 @@ body {
 
 
 
-.carImageLocation {
+.carImage {
     position: absolute;
-    bottom:-50px;
-    left:350px;
+    width: 40vw;
+    height: 40vh;
+    left: 200%;
+    transform: translateX(-50%);
+    bottom: -50%;
+
 }
 
-.carImage {
-    width: 800px;
-}
 
 .leftArrow {
     width: 10%;

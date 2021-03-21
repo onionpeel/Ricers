@@ -17,61 +17,57 @@ import {
   incrementRims,
   decrementRims,
   incrementStickers,
-  decrementStickers,
-  incrementUnderglow,
-  decrementUnderglow
+  decrementStickers
 } from './redux/actions/controlActions';
 
 const TableControls = () => {
-  // let [client, setClient] = useState();
-  //
-  // useEffect(() => {
-  //   let newClient = new NFTStorage({ token: PROCESS.ENV.APIKEY });
-  //   setClient(newClient);
-  // }, []);
-  //
-  //
-  // const handleOnSubmit = async e => {
-  //   e.preventDefault();
-  //   let cid = await createPngCid(storedPng.storedPngAsString);
-  //   let metadataCid = createMetadataCid(cid);
+  let [client, setClient] = useState();
+  const NFT_STORAGE_APIKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnaXRodWJ8NzY0MTE2NDIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYxNjMwMDMzMjUxMSwibmFtZSI6ImRlZmF1bHQifQ.yW-4EFUavjRkTkxNm2zL-8r2tBG91FXfFzmZmDikOrE';
+
+  useEffect(() => {
+    let newClient = new NFTStorage({ token: NFT_STORAGE_APIKEY });
+    setClient(newClient);
+  }, []);
+
+  const handleOnClick = async () => {
+    let cidPath = require('./images/'+storedPng.storedPngAsString+'.png').default;
+    console.log(cidPath)
+    let cid = await createPngCid(cidPath);
+    let metadataCid = await createMetadataCid(cid);
+    console.log(metadataCid)
   // XXXXXXXXXXXxweb3.mintToken(address, metadataCid);XXXXXXXXX
-  // };
-  //
-  // const createPngCid = async pngPath => {
-  //   let image = await axios.get(pngPath, {responseType: 'blob'});
-  //   let cid = await client.storeBlob(image.data);
-  //   return cid;
-  // };
-  //
-  // const createMetadataCid = async pngCid => {
-  //   let metadata = {
-  //     image: pngCid,
-  //     model,
-  //     color,
-  //     spoiler,
-  //     rims,
-  //     stickers
-  //   };
-  //
-  //   let metadataCid = await client.storeBlob(JSON.stringify(metadata));
-  //   return metadataCid;
-  // };
-  
+  };
+
+  const createPngCid = async pngPath => {
+    let image = await axios.get(pngPath, {responseType: 'blob'});
+    let cid = await client.storeBlob(image.data);
+    return cid;
+  };
+
+  const createMetadataCid = async pngCid => {
+    let metadata = {
+      image: pngCid,
+      model,
+      color,
+      spoiler,
+      rims,
+      stickers
+    };
+    let metadataCid = await client.storeBlob(JSON.stringify(metadata));
+    return metadataCid;
+  };
+
   let [model, setModel] = useState(0);
   let [color, setColor] = useState(0);
   let [spoiler, setSpoiler] = useState(0);
   let [stickers, setStickers] = useState(0);
   let [rims, setRims] = useState(0);
-  let [underglow, setUnderglow] = useState(0);
-  let [pngString, setPngString] = useState();
 
   const dispatch = useDispatch();
   let storedPng = useSelector(state => {
     let pngObject = state.storedPng;
     let storedPngAsString = Object.values(pngObject).map(num => num.toString()).join('');
-    let storedPngAsNumber = +storedPngAsString;
-    return {storedPngAsString, storedPngAsNumber};
+    return {storedPngAsString};
   });
 
   const handleModelIncrement = () => {
@@ -235,7 +231,6 @@ const TableControls = () => {
   return (
     <div>
 
-
       <Table striped bordered hover size="sm">
         <tbody>
           <tr>
@@ -281,15 +276,19 @@ const TableControls = () => {
 
         </tbody>
       </Table>
-
+      {/*
       <br></br>
       <div style={{color:'white'}}>
         <h5>user generated png value as string: {storedPng.storedPngAsString}</h5>
       </div>
-
+      */}
+      <br></br>
+      <Button onClick={handleOnClick}>
+        Mint your Ricer NFT!
+      </Button>
 
     <div className="carImageLocation">
-    <img src="https://ipfs.io/ipfs/bafybeifedgpg2bqxlu4uqafclg53rkgmo7cgskozm364gbq5twl5aarx3y"></img>
+    <img className="body carImage" src={require('./images/'+storedPng.storedPngAsString+'.png').default}></img>
       </div>
       </div>
   )
