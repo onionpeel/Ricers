@@ -22,7 +22,7 @@ import {
 
 const TableControls = () => {
   let [client, setClient] = useState();
-  const NFT_STORAGE_APIKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnaXRodWJ8NzY0MTE2NDIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYxNjMwMDMzMjUxMSwibmFtZSI6ImRlZmF1bHQifQ.yW-4EFUavjRkTkxNm2zL-8r2tBG91FXfFzmZmDikOrE';
+  const NFT_STORAGE_APIKEY = 
 
   useEffect(() => {
     let newClient = new NFTStorage({ token: NFT_STORAGE_APIKEY });
