@@ -1,3 +1,4 @@
+require('dotenv').config()
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 module.exports = {
@@ -8,9 +9,10 @@ module.exports = {
      port: 7545,
      network_id: "*",
     },
+
     rinkeby: {
       provider: function() {
-        return new HDWalletProvider(privateKey, "wss://rinkeby.infura.io/ws/v3/00ab28cb20724625b7170c222da81e44")
+        return new HDWalletProvider(process.env.PRIVATE_KEY, "wss://rinkeby.infura.io/ws/v3/de941405831444d594597bdbdd2e0381")
       },
       network_id: 4,
       websockets: true,

@@ -22,11 +22,20 @@ import {
 
 const TableControls = () => {
   let [client, setClient] = useState();
-  const NFT_STORAGE_APIKEY = 
+
 
   useEffect(() => {
-    let newClient = new NFTStorage({ token: NFT_STORAGE_APIKEY });
+    let newClient = new NFTStorage({ token: process.env.REACT_APP_NFT_API_KEY });
     setClient(newClient);
+
+
+
+
+
+
+
+
+
   }, []);
 
   const handleOnClick = async () => {
@@ -276,12 +285,12 @@ const TableControls = () => {
 
         </tbody>
       </Table>
-      {/*
+
       <br></br>
       <div style={{color:'white'}}>
         <h5>user generated png value as string: {storedPng.storedPngAsString}</h5>
       </div>
-      */}
+
       <br></br>
       <Button onClick={handleOnClick}>
         Mint your Ricer NFT!
