@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
-import web3 from 'web3';
+import Web3 from 'web3';
 import axios from 'axios';
-import { NFTStorage, Blob } from 'nft.storage'
+import { NFTStorage } from 'nft.storage';
+import Ricer from './build/Ricer.json';
+import detectEthereumProvider from '@metamask/detect-provider';
 import leftArrow from './images/left.png';
 import rightArrow from './images/right.png';
 
@@ -21,30 +23,78 @@ import {
 } from './redux/actions/controlActions';
 
 const TableControls = () => {
-  let [client, setClient] = useState();
-
+  const client = new NFTStorage({ token: process.env.REACT_APP_NFT_API_KEY });
+  const [web3, setWeb3] = useState();
+  const [ricer, setRicer] = useState();
+  const [provider, setProvider] = useState();
+  const [currentMetaMaskAccount, setCurrentMetaMaskAccount] = useState(null);
+  let [currentAccount, setCurrentAccount] = useState();
+  let [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    let newClient = new NFTStorage({ token: process.env.REACT_APP_NFT_API_KEY });
-    setClient(newClient);
+    const init = async () => {
+      const provider = await detectEthereumProvider();
+      if (provider) {
+        setProvider(provider);
+        startApp(provider);
+      } else {
+        alert('Please install MetaMask!');
+      };
 
+      async function startApp(provider) {
+        if (provider !== window.ethereum) {
+          alert('Do you have multiple wallets installed?');
+        };
 
+        let web3Init = new Web3(provider);
+        setWeb3(web3Init);
 
+        //create ricer instance to interact with deployed Ricer contract
+        const networkId = await web3Init.eth.net.getId();
+        const deploymentNetwork = Ricer.networks[networkId];
+        if (deploymentNetwork !== undefined) {
+          const deployedRicer = new web3Init.eth.Contract(
+            Ricer.abi,
+            deploymentNetwork.address
+          );
+          setRicer(deployedRicer);
+        };
 
+        let accounts = await provider.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) setIsConnected(true);
+      };
+    };
+    init();
 
-
-
-
-
+    return () => setIsConnected(false);
   }, []);
 
-  const handleOnClick = async () => {
+  const getAccounts = async () => {
+    const accounts = await provider.request({ method: 'eth_requestAccounts' });
+    await handleAccountsChanged(accounts);
+  };
+
+  function handleAccountsChanged(accounts) {
+    if (accounts.length === 0) {
+      console.log('Please connect to MetaMask.');
+    } else if (accounts[0] !== currentMetaMaskAccount) {
+      setCurrentAccount(accounts[0]);
+      setIsConnected(true);
+      window.location.reload();
+    }
+  };
+
+  const connectToMetaMask = async () => {
+    await getAccounts();
+    provider.on('accountsChanged', handleAccountsChanged);
+  };
+
+  const handleOnMint = async () => {
+    if (!isConnected) alert('Please connect using MetaMask');
     let cidPath = require('./images/'+storedPng.storedPngAsString+'.png').default;
-    console.log(cidPath)
     let cid = await createPngCid(cidPath);
     let metadataCid = await createMetadataCid(cid);
-    console.log(metadataCid)
-  // XXXXXXXXXXXxweb3.mintToken(address, metadataCid);XXXXXXXXX
+    // let mintedRicer = await .mintToken(address, metadataCid);
   };
 
   const createPngCid = async pngPath => {
@@ -246,32 +296,43 @@ const TableControls = () => {
             <td>Model</td>
           </tr>
           <tr>
-            <td><img className="leftArrow" src={leftArrow} onClick={handleModelDecrement}></img>{MODELS[model]}
-            <img className="rightArrow" src={rightArrow} onClick={handleModelIncrement}></img></td>
+            <td>
+              <img className="leftArrow" src={leftArrow} onClick={handleModelDecrement} alt="model decrement"></img> {MODELS[model]}
+              <img className="rightArrow" src={rightArrow} onClick={handleModelIncrement} alt="model increment"></img>
+            </td>
           </tr>
 
           <tr>
             <td>Color</td>
           </tr>
           <tr>
-          <td><img className="leftArrow" src={leftArrow} onClick={handleColorDecrement}></img>{COLORS[color]}
-            <img className="rightArrow" src={rightArrow} onClick={handleColorIncrement}></img></td>
+            <td>
+              <img className="leftArrow" src={leftArrow} onClick={handleColorDecrement} alt="color decrement"></img>
+                {COLORS[color]}
+              <img className="rightArrow" src={rightArrow} onClick={handleColorIncrement} alt="color increment"></img>
+            </td>
           </tr>
 
           <tr>
             <td>Spoiler</td>
           </tr>
           <tr>
-          <td><img className="leftArrow" src={leftArrow} onClick={handleSpoilerDecrement}></img>{SPOILERS[spoiler]}
-            <img className="rightArrow" src={rightArrow} onClick={handleSpoilerIncrement}></img></td>
+            <td>
+              <img className="leftArrow" src={leftArrow} onClick={handleSpoilerDecrement} alt="spoiler decrement"></img>
+                {SPOILERS[spoiler]}
+              <img className="rightArrow" src={rightArrow} onClick={handleSpoilerIncrement} alt="spoiler increment"></img>
+            </td>
           </tr>
 
           <tr>
             <td>Decals</td>
           </tr>
           <tr>
-          <td><img className="leftArrow" src={leftArrow} onClick={handleStickersDecrement}></img>{STICKERS[stickers]}
-            <img className="rightArrow" src={rightArrow} onClick={handleStickersIncrement}></img></td>
+            <td>
+              <img className="leftArrow" src={leftArrow} onClick={handleStickersDecrement} alt="sticker decrement"></img>
+                {STICKERS[stickers]}
+              <img className="rightArrow" src={rightArrow} onClick={handleStickersIncrement} alt="sticker increment"></img>
+            </td>
           </tr>
 
 
@@ -279,8 +340,11 @@ const TableControls = () => {
             <td>Rims</td>
           </tr>
           <tr>
-          <td><img className="leftArrow" src={leftArrow} onClick={handleRimsDecrement}></img>{RIMS[rims]}
-            <img className="rightArrow" src={rightArrow} onClick={handleRimsIncrement}></img></td>
+            <td>
+              <img className="leftArrow" src={leftArrow} onClick={handleRimsDecrement} alt="rims decrement"></img>
+                {RIMS[rims]}
+              <img className="rightArrow" src={rightArrow} onClick={handleRimsIncrement} alt="rims increment"></img>
+            </td>
           </tr>
 
         </tbody>
@@ -292,15 +356,22 @@ const TableControls = () => {
       </div>
 
       <br></br>
-      <Button onClick={handleOnClick}>
+      <Button onClick={handleOnMint}>
         Mint your Ricer NFT!
       </Button>
+      <br></br>
 
-    <div className="carImageLocation">
-    <img className="body carImage" src={require('./images/'+storedPng.storedPngAsString+'.png').default}></img>
+      {isConnected === true ? 'connected' : 'not connected'}
+
+      <Button onClick={connectToMetaMask}>
+        Connect to your MetaMask account
+      </Button>
+
+      <div className="carImageLocation">
+        <img className="body carImage" src={require('./images/'+storedPng.storedPngAsString+'.png').default} alt="car"></img>
       </div>
-      </div>
-  )
+    </div>
+  );
 };
 
 export default TableControls;
