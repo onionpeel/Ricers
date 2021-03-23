@@ -28,7 +28,6 @@ const TableControls = () => {
   const [ricer, setRicer] = useState();
   const [provider, setProvider] = useState();
   const [currentMetaMaskAccount, setCurrentMetaMaskAccount] = useState(null);
-  let [currentAccount, setCurrentAccount] = useState();
   let [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -61,7 +60,10 @@ const TableControls = () => {
         };
 
         let accounts = await provider.request({ method: 'eth_accounts' });
-        if (accounts.length > 0) setIsConnected(true);
+        if (accounts.length > 0) {
+          setIsConnected(true);
+          setCurrentMetaMaskAccount(accounts[0]);
+        };
       };
     };
     init();
@@ -78,7 +80,7 @@ const TableControls = () => {
     if (accounts.length === 0) {
       console.log('Please connect to MetaMask.');
     } else if (accounts[0] !== currentMetaMaskAccount) {
-      setCurrentAccount(accounts[0]);
+      setCurrentMetaMaskAccount(accounts[0]);
       setIsConnected(true);
       window.location.reload();
     }
@@ -90,11 +92,19 @@ const TableControls = () => {
   };
 
   const handleOnMint = async () => {
-    if (!isConnected) alert('Please connect using MetaMask');
+    let accounts = await provider.request({ method: 'eth_accounts' });
+    if (accounts.length === 0) {
+      alert('Please connect using MetaMask');
+      setCurrentMetaMaskAccount(null);
+      setIsConnected(false);
+      return;
+    };
     let cidPath = require('./images/'+storedPng.storedPngAsString+'.png').default;
     let cid = await createPngCid(cidPath);
     let metadataCid = await createMetadataCid(cid);
-    // let mintedRicer = await .mintToken(address, metadataCid);
+    console.log(metadataCid)
+    let mintedRicer = await ricer.methods.mintToken(currentMetaMaskAccount, metadataCid).send({from: currentMetaMaskAccount});
+    console.log(mintedRicer)
   };
 
   const createPngCid = async pngPath => {
