@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Container, Row, Col } from 'react-bootstrap';
 import Web3 from 'web3';
 import axios from 'axios';
 import { NFTStorage } from 'nft.storage';
@@ -296,91 +296,73 @@ const TableControls = () => {
   const STICKERS = ["RICERS", "FLAMES", "CHECKERED", "ALL OVER"];
   const RIMS = ["BREDRIN", "GOTHIC", "CODE RED", "RIFKIND", "FAT JOE"];
 
-
   return (
-    <div>
-
-      <Table striped bordered hover size="sm">
-        <tbody>
-          <tr>
-            <td>Model</td>
-          </tr>
-          <tr>
-            <td>
-              <img className="leftArrow" src={leftArrow} onClick={handleModelDecrement} alt="model decrement"></img> {MODELS[model]}
+      <Container>
+        <Row>
+          <Col lg="3" sm="3" xs="3" className="mt-4 selector-col">
+            <div className="selector-label">
+              Model
+            </div>
+            <div className="d-flex justify-content-around selector">
+              <img className="leftArrow" src={leftArrow} onClick={handleModelDecrement} alt="model decrement"></img>
+              <div className="p-2">{MODELS[model]}</div>
               <img className="rightArrow" src={rightArrow} onClick={handleModelIncrement} alt="model increment"></img>
-            </td>
-          </tr>
+            </div>
 
-          <tr>
-            <td>Color</td>
-          </tr>
-          <tr>
-            <td>
+            <div className="selector-label">
+              Color
+            </div>
+            <div className="d-flex justify-content-around selector">
               <img className="leftArrow" src={leftArrow} onClick={handleColorDecrement} alt="color decrement"></img>
-                {COLORS[color]}
+              <div className="p-2">{COLORS[color]}</div>
               <img className="rightArrow" src={rightArrow} onClick={handleColorIncrement} alt="color increment"></img>
-            </td>
-          </tr>
+            </div>
 
-          <tr>
-            <td>Spoiler</td>
-          </tr>
-          <tr>
-            <td>
+            <div className="selector-label">
+              Spoiler
+            </div>
+            <div className="d-flex justify-content-around selector">
               <img className="leftArrow" src={leftArrow} onClick={handleSpoilerDecrement} alt="spoiler decrement"></img>
-                {SPOILERS[spoiler]}
+              <div className="p-2">{SPOILERS[spoiler]}</div>
               <img className="rightArrow" src={rightArrow} onClick={handleSpoilerIncrement} alt="spoiler increment"></img>
-            </td>
-          </tr>
+            </div>
 
-          <tr>
-            <td>Decals</td>
-          </tr>
-          <tr>
-            <td>
+            <div className="selector-label">
+              Decals
+            </div>
+            <div className="d-flex justify-content-around selector">
               <img className="leftArrow" src={leftArrow} onClick={handleStickersDecrement} alt="sticker decrement"></img>
-                {STICKERS[stickers]}
+              <div className="p-2">{STICKERS[stickers]}</div>
               <img className="rightArrow" src={rightArrow} onClick={handleStickersIncrement} alt="sticker increment"></img>
-            </td>
-          </tr>
+            </div>
 
-
-          <tr>
-            <td>Rims</td>
-          </tr>
-          <tr>
-            <td>
+            <div className="selector-label">
+              Rims
+            </div>
+            <div className="d-flex justify-content-around selector">
               <img className="leftArrow" src={leftArrow} onClick={handleRimsDecrement} alt="rims decrement"></img>
-                {RIMS[rims]}
+              <div className="p-2">{RIMS[rims]}</div>
               <img className="rightArrow" src={rightArrow} onClick={handleRimsIncrement} alt="rims increment"></img>
-            </td>
-          </tr>
+            </div>
 
-        </tbody>
-      </Table>
+            <div className="d-flex justify-content-around button-div">
+              {isConnected === true ?
+                <Button onClick={handleOnMint} variant="secondary">
+                  Mint your Ricer NFT!
+                </Button>
+                :
+                <Button onClick={connectToMetaMask} variant="secondary">
+                  Connect to your MetaMask account
+                </Button>
+              }
+            </div>
+          </Col>
 
-      <br></br>
-      <div style={{color:'white'}}>
-        <h5>user generated png value as string: {storedPng.storedPngAsString}</h5>
-      </div>
-
-      <br></br>
-      <Button onClick={handleOnMint}>
-        Mint your Ricer NFT!
-      </Button>
-      <br></br>
-
-      {isConnected === true ? 'connected' : 'not connected'}
-
-      <Button onClick={connectToMetaMask}>
-        Connect to your MetaMask account
-      </Button>
-
-      <div className="carImageLocation">
-        <img className="body carImage" src={require('./images/'+storedPng.storedPngAsString+'.png').default} alt="car"></img>
-      </div>
-    </div>
+          <Col lg="9" sm="9" xs="9">
+              <img className="body carImage" src={require('./images/'+storedPng.storedPngAsString+'.png').default} alt="car"></img>
+          </Col>
+        </Row>
+      </Container>
   );
 };
 

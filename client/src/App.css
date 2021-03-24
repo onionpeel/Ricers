@@ -1,47 +1,56 @@
-body {
-    background-image: url("./images/garage.jpg");
-    background-size: 100%;
-    position:absolute;
-    background-repeat: no-repeat;
-
+body, html {
+  background-color: #2b3e59;
 }
 
-.table {
-    color: rgb(255, 255, 255);
-    background-color:rgba(0,0,0,0.5);
-    border-style: none;
-
+.container {
+  padding-left: 2em;
+  background-image: url("./images/garage.jpg");
+  height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
-.table-bordered td, .table-bordered th {
-    color:rgb(255, 255, 255);
-    /* border-style: none; */
-
-
+.selector-col {
+  background-color:rgba(0,0,0,0.5);
+  border-radius: 10px;
 }
 
-.table-striped tbody tr:nth-of-type(2n+1) {
-    color: rgb(255, 255, 255);
+.selector-label {
+  color: white;
+  margin-top: .5em;
+  font-size: 1.2em;
 }
 
+.selector-label-top {
+  color: white;
+  margin-top: .5em;
+  font-size: 1.2em;
+}
 
-
+.selector {
+  color: white;
+  margin-top: .3em;
+  font-size: 1.2em;
+}
 
 .carImage {
     position: absolute;
     width: 40vw;
     height: 40vh;
-    left: 200%;
+    left: 37%;
     transform: translateX(-50%);
-    bottom: -1%;
-
+    bottom: 26%;
 }
 
+.button-div {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
 
 .leftArrow {
     width: 10%;
 }
-
 
 .rightArrow {
     width: 10%;
