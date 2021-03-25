@@ -1,12 +1,7 @@
 import { Modal, Button } from 'react-bootstrap';
 
 const TransactionReceipt = (props) => {
-  let cidUrl = props.cidLink;
-  let metadataUrl = props.metadataUrl;
-  console.log(props.tokenId)
-  console.log(props.cidLink)
-  console.log(props.metadataCidLink)
-
+  console.log(props)
   return (
     <Modal
       {...props}
@@ -14,13 +9,13 @@ const TransactionReceipt = (props) => {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Body className="modal-receipt-color modal-receipt-data" closebutton>
+      <Modal.Body className="modal-receipt-color modal-receipt-data">
         <div>
-          Your token id is: <b>{props.tokenId}</b>
+          Your Ricer token id is: <b>{props.tokenid}</b>
         </div>
-        <div >
+        <div>
           <a className="modal-receipt-links"
-            href= {cidUrl}
+            href= {props.cidlink}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -29,7 +24,7 @@ const TransactionReceipt = (props) => {
         </div>
         <div >
           <a className="modal-receipt-links"
-            href= {metadataUrl}
+            href= {props.metadatacidlink}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -38,11 +33,11 @@ const TransactionReceipt = (props) => {
         </div>
         <div >
           <a className="modal-receipt-links"
-            href= {"https://ipfs.io/ipfs/bafkreifwhcrjyim63qp2qgvlltxg6v235e452teivljyh7jjl6v6i4w7sm"}
+            href= {props.transactionhashlink}
             target="_blank"
             rel="noopener noreferrer"
           >
-            Click to see the transaction information
+            Click to see the transaction information on Etherscan
           </a>
         </div>
       </Modal.Body>
@@ -50,7 +45,7 @@ const TransactionReceipt = (props) => {
         <div className="modal-receipt-image-div">
           <img
             className="modal-receipt-image"
-            src={cidUrl}
+            src={props.cidlink}
             alt="ricer"
           />
         </div>
@@ -64,13 +59,3 @@ const TransactionReceipt = (props) => {
 };
 
 export default TransactionReceipt;
-
-// <Modal.Body className="model-receipt-body modal-receipt-color">
-//   <div className="modal-receipt-image-div">
-//     <img
-//       className="modal-receipt-image"
-//       src={cidUrl}
-//       alt="ricer"
-//     />
-//   </div>
-// </Modal.Body>
