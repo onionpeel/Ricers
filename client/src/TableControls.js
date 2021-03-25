@@ -4,8 +4,9 @@ import { Button, Spinner, Container, Row, Col } from 'react-bootstrap';
 import Web3 from 'web3';
 import axios from 'axios';
 import { NFTStorage } from 'nft.storage';
-import Ricer from './build/Ricer.json';
 import detectEthereumProvider from '@metamask/detect-provider';
+import TransactionReceipt from './modals/TransactionReceipt';
+import Ricer from './build/Ricer.json';
 import leftArrow from './images/left.png';
 import rightArrow from './images/right.png';
 
@@ -30,6 +31,8 @@ const TableControls = () => {
   const [currentMetaMaskAccount, setCurrentMetaMaskAccount] = useState(null);
   let [isConnected, setIsConnected] = useState();
   let [isMinting, setIsMinting] = useState();
+  let [modalShow, setModalShow] = useState(false);
+  let [modalShowData, setModalShowData] = useState({});
 
   useEffect(() => {
     const init = async () => {
@@ -99,7 +102,6 @@ const TableControls = () => {
   };
 
   const handleOnMint = async () => {
-
     let accounts = await provider.request({ method: 'eth_accounts' });
     if (accounts.length === 0) {
       alert('Please connect using MetaMask');
@@ -115,12 +117,15 @@ const TableControls = () => {
     console.log('metadataCid: ', metadataCid)
     let mintedRicer = await ricer.methods.mintToken(accounts[0], metadataCid).send({from: currentMetaMaskAccount});
     console.log('mintedRicerHash: ', mintedRicer);
-    console.log(mintedRicer.events.Transfer.returnValues.tokenId);
+
+    let tokenId = mintedRicer.events.Transfer.returnValues.tokenId;
+    let cidLink = `ipfs://${cid}`;
+    let metadataCidLink = `ipfs://${metadataCid}`;
+
+    setModalShowData({...modalShowData, tokenId, cidLink, metadataCidLink});
 
 
-
-
-
+    setModalShow(true);
     setIsMinting(false);
   };
 
@@ -383,6 +388,13 @@ const TableControls = () => {
                     </Button>
               }
             </div>
+
+            <TransactionReceipt
+              tokenId={setModalShowData.tokenId}
+
+              show={modalShow}
+              onHide={() => setModalShow(false)}
+            />
           </Col>
 
           <Col lg="9" sm="9" xs="9">
@@ -394,3 +406,7 @@ const TableControls = () => {
 };
 
 export default TableControls;
+
+// tokenId={setModalShowData.tokenId}
+// cidLink={modalShowData.cidLink}
+// metadataCidLink={modalShowData.metadataCidLink}

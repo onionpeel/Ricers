@@ -55,3 +55,22 @@ body, html {
 .rightArrow {
     width: 10%;
 }
+
+.modal-receipt-color {
+  background-color: #c7dded;
+}
+
+.modal-body {
+  padding: 0;
+  padding-bottom: 1em;
+}
+
+.modal-receipt-image-div {
+  text-align: center;
+  display: block;
+}
+
+.modal-receipt-image {
+  height: 300px;
+  width: 300px;
+}
