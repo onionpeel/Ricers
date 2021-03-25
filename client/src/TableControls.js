@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Table, Button, Container, Row, Col } from 'react-bootstrap';
+import { Button, Container, Row, Col } from 'react-bootstrap';
 import Web3 from 'web3';
 import axios from 'axios';
 import { NFTStorage } from 'nft.storage';
@@ -29,6 +29,7 @@ const TableControls = () => {
   const [provider, setProvider] = useState();
   const [currentMetaMaskAccount, setCurrentMetaMaskAccount] = useState(null);
   let [isConnected, setIsConnected] = useState(false);
+  let [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -99,12 +100,20 @@ const TableControls = () => {
       setIsConnected(false);
       return;
     };
+    setIsLoading(true);
     let cidPath = require('./images/'+storedPng.storedPngAsString+'.png').default;
     let cid = await createPngCid(cidPath);
     let metadataCid = await createMetadataCid(cid);
-    console.log(metadataCid)
-    let mintedRicer = await ricer.methods.mintToken(currentMetaMaskAccount, metadataCid).send({from: currentMetaMaskAccount});
-    console.log(mintedRicer)
+    console.log('metadataCid: ', metadataCid)
+    let mintedRicer = await ricer.methods.mintToken(accounts[0], metadataCid).send({from: currentMetaMaskAccount});
+    console.log('mintedRicerHash: ', mintedRicer);
+    console.log(mintedRicer.events.Transfer.returnValues.tokenId);
+
+
+
+
+
+    setIsLoading(false);
   };
 
   const createPngCid = async pngPath => {

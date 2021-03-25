@@ -8,7 +8,9 @@ contract Ricer is ERC721{
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
-  constructor() ERC721("Ricer", "RCR") {}
+  constructor() ERC721("Ricer", "RCR") {
+    setBaseURI('ipfs://');
+  }
 
   function mintToken(address racer, string memory rcrMetadata) public returns (uint256){
     _tokenIds.increment();
