@@ -56,21 +56,42 @@ body, html {
     width: 10%;
 }
 
-.modal-receipt-color {
-  background-color: #c7dded;
-}
 
-.modal-body {
-  padding: 0;
-  padding-bottom: 1em;
+
+.modal-receipt-color {
+  background-color: #e3f3fc;
 }
 
 .modal-receipt-image-div {
-  text-align: center;
-  display: block;
+  display: flex;
+  justify-content: center;
+  height: 100px;
+  background-color: #e3f3fc;
 }
 
 .modal-receipt-image {
-  height: 300px;
-  width: 300px;
+  width: 40%;
+  height: 100px;
+}
+
+.modal-receipt-data {
+  text-align: center;
+  padding-left: 1em;
+  padding-top: .5em;
+}
+
+.modal-receipt-footer {
+  text-align: right;
+
+  padding-top: .3em;
+}
+
+.modal-receipt-button {
+  margin: .5em;
+  margin-top: 1.4em;
+
+}
+
+.modal-receipt-links {
+  color: #38314f;
 }

@@ -119,10 +119,11 @@ const TableControls = () => {
     console.log('mintedRicerHash: ', mintedRicer);
 
     let tokenId = mintedRicer.events.Transfer.returnValues.tokenId;
-    let cidLink = `ipfs://${cid}`;
-    let metadataCidLink = `ipfs://${metadataCid}`;
+    console.log(`tokenId: ${tokenId}`)
+    let cidLink = `https://ipfs.io/ipfs/${cid}`;
+    let metadataCidLink = `https://ipfs.io/ipfs/${metadataCid}`;
 
-    setModalShowData({...modalShowData, tokenId, cidLink, metadataCidLink});
+    setModalShowData({tokenId, cidLink, metadataCidLink});
 
 
     setModalShow(true);
@@ -390,8 +391,9 @@ const TableControls = () => {
             </div>
 
             <TransactionReceipt
-              tokenId={setModalShowData.tokenId}
-
+              tokenId={modalShowData.tokenId}
+              cidLink={modalShowData.cidLink}
+              metadataCidLink={modalShowData.metadataCidLink}
               show={modalShow}
               onHide={() => setModalShow(false)}
             />
@@ -406,7 +408,3 @@ const TableControls = () => {
 };
 
 export default TableControls;
-
-// tokenId={setModalShowData.tokenId}
-// cidLink={modalShowData.cidLink}
-// metadataCidLink={modalShowData.metadataCidLink}
