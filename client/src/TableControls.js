@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Container, Row, Col } from 'react-bootstrap';
+import { Button, Spinner, Container, Row, Col } from 'react-bootstrap';
 import Web3 from 'web3';
 import axios from 'axios';
 import { NFTStorage } from 'nft.storage';
@@ -28,8 +28,8 @@ const TableControls = () => {
   const [ricer, setRicer] = useState();
   const [provider, setProvider] = useState();
   const [currentMetaMaskAccount, setCurrentMetaMaskAccount] = useState(null);
-  let [isConnected, setIsConnected] = useState(false);
-  let [isLoading, setIsLoading] = useState(false);
+  let [isConnected, setIsConnected] = useState();
+  let [isMinting, setIsMinting] = useState();
 
   useEffect(() => {
     const init = async () => {
@@ -39,11 +39,17 @@ const TableControls = () => {
         startApp(provider);
       } else {
         alert('Please install MetaMask!');
+        setIsConnected(false);
+        setIsMinting(false);
+        return;
       };
 
       async function startApp(provider) {
         if (provider !== window.ethereum) {
           alert('Do you have multiple wallets installed?');
+          setIsConnected(false);
+          setIsMinting(false);
+          return;
         };
 
         let web3Init = new Web3(provider);
@@ -93,6 +99,7 @@ const TableControls = () => {
   };
 
   const handleOnMint = async () => {
+
     let accounts = await provider.request({ method: 'eth_accounts' });
     if (accounts.length === 0) {
       alert('Please connect using MetaMask');
@@ -100,7 +107,8 @@ const TableControls = () => {
       setIsConnected(false);
       return;
     };
-    setIsLoading(true);
+    setIsMinting(true);
+
     let cidPath = require('./images/'+storedPng.storedPngAsString+'.png').default;
     let cid = await createPngCid(cidPath);
     let metadataCid = await createMetadataCid(cid);
@@ -113,7 +121,7 @@ const TableControls = () => {
 
 
 
-    setIsLoading(false);
+    setIsMinting(false);
   };
 
   const createPngCid = async pngPath => {
@@ -355,14 +363,24 @@ const TableControls = () => {
             </div>
 
             <div className="d-flex justify-content-around button-div">
-              {isConnected === true ?
-                <Button onClick={handleOnMint} variant="secondary">
-                  Mint your Ricer NFT!
-                </Button>
-                :
-                <Button onClick={connectToMetaMask} variant="secondary">
-                  Connect to your MetaMask account
-                </Button>
+              {(isMinting && isConnected)
+                ? <Button variant="secondary" disabled>
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                    Minting...
+                  </Button>
+                : (!isMinting && isConnected)
+                  ? <Button onClick={handleOnMint} variant="secondary">
+                       Mint your Ricer NFT!
+                    </Button>
+                  : <Button onClick={connectToMetaMask} variant="secondary">
+                      Connect to your MetaMask account
+                    </Button>
               }
             </div>
           </Col>
