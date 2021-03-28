@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, Spinner, Container, Row, Col } from 'react-bootstrap';
 import Web3 from 'web3';
 import axios from 'axios';
+import FormData from 'form-data';
 import { NFTStorage } from 'nft.storage';
 import detectEthereumProvider from '@metamask/detect-provider';
 import TransactionReceipt from './modals/TransactionReceipt';
@@ -102,6 +103,7 @@ const TableControls = () => {
   };
 
   const handleOnMint = async () => {
+    //Ensure that the user is signed in with MetaMask
     let accounts = await provider.request({ method: 'eth_accounts' });
     if (accounts.length === 0) {
       alert('Please connect using MetaMask');
@@ -109,33 +111,55 @@ const TableControls = () => {
       setIsConnected(false);
       return;
     };
+
     setIsMinting(true);
-
+    //Generate the path to the .png file selected by the user
     let cidPath = require('./images/'+storedPng.storedPngAsString+'.png').default;
+    //Generate the cid for the user's .png file on IPFS
     let cid = await createPngCid(cidPath);
-    let metadataCid = await createMetadataCid(cid);
-    console.log('metadataCid: ', metadataCid)
-    let mintedRicer = await ricer.methods.mintToken(accounts[0], metadataCid).send({from: currentMetaMaskAccount});
-    console.log('mintedRicerHash: ', mintedRicer);
 
-    let tokenId = mintedRicer.events.Transfer.returnValues.tokenId;
-    console.log(`tokenId: ${tokenId}`)
-    let cidLink = `https://ipfs.io/ipfs/${cid}`;
-    let metadataCidLink = `https://ipfs.io/ipfs/${metadataCid}`;
-
-    setModalShowData({tokenId, cidLink, metadataCidLink});
-
-
-    setModalShow(true);
-    setIsMinting(false);
+    // let metadataCid = await createMetadataCid(cid);
+    //
+    //
+    // console.log('metadataCid: ', metadataCid)
+    // let mintedRicer = await ricer.methods.mintToken(accounts[0], metadataCid).send({from: currentMetaMaskAccount});
+    // console.log('mintedRicerHash: ', mintedRicer);
+    //
+    // let tokenId = mintedRicer.events.Transfer.returnValues.tokenId;
+    // console.log(`tokenId: ${tokenId}`)
+    // let transactionHash = mintedRicer.transactionHash;
+    // console.log(transactionHash)
+    // let cidLink = `https://ipfs.io/ipfs/${cid}`;
+    // let metadataCidLink = `https://ipfs.io/ipfs/${metadataCid}`;
+    // let transactionHashLink = `https://rinkeby.etherscan.io/tx/${transactionHash}`;
+    // console.log(`metadataCidLink: ${metadataCidLink}`)
+    // console.log(`transactionHashLink: ${transactionHashLink}`)
+    //
+    // setModalShowData({
+    //   tokenId,
+    //   cidLink,
+    //   metadataCidLink,
+    //   transactionHashLink
+    // });
+    //
+    //
+    // setModalShow(true);
+    // setIsMinting(false);
   };
 
+//Uses .png file path as input and returns a cid on IPFS of the .png file
   const createPngCid = async pngPath => {
-    let image = await axios.get(pngPath, {responseType: 'blob'});
-    let cid = await client.storeBlob(image.data);
-    return cid;
+    //Retrieve user's selected .png file from /build
+    let pngFile = await axios.get(pngPath, {responseType: 'blob'});
+    //Convert the .png file to a blob and send it to the backend
+    const data = new FormData();
+    data.append('blob', pngFile.data)
+    let res = await axios.post('http://localhost:5000/createimagecid', data);
+    //Return the content identifier for the .png file on IPFS
+    return res.data;
   };
 
+//Creates a cid for the metadata of the users .png cid
   const createMetadataCid = async pngCid => {
     let metadata = {
       image: pngCid,
@@ -145,8 +169,10 @@ const TableControls = () => {
       rims,
       stickers
     };
-    let metadataCid = await client.storeBlob(JSON.stringify(metadata));
-    return metadataCid;
+    //Send the metadata object to generate a cid on IPFS
+    let metadataCid = await axios.post('http://localhost:5000/createmetadatacid', JSON.stringify(metadata));
+    // let metadataCid = await client.storeBlob(JSON.stringify(metadata));
+    return metadataCid.data;
   };
 
   let [model, setModel] = useState(0);
@@ -391,9 +417,10 @@ const TableControls = () => {
             </div>
 
             <TransactionReceipt
-              tokenId={modalShowData.tokenId}
-              cidLink={modalShowData.cidLink}
-              metadataCidLink={modalShowData.metadataCidLink}
+              tokenid={modalShowData.tokenId}
+              cidlink={modalShowData.cidLink}
+              metadatacidlink={modalShowData.metadataCidLink}
+              transactionhashlink={modalShowData.transactionHashLink}
               show={modalShow}
               onHide={() => setModalShow(false)}
             />
