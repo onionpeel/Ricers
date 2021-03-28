@@ -4,7 +4,6 @@ import { Button, Spinner, Container, Row, Col } from 'react-bootstrap';
 import Web3 from 'web3';
 import axios from 'axios';
 import FormData from 'form-data';
-import { NFTStorage } from 'nft.storage';
 import detectEthereumProvider from '@metamask/detect-provider';
 import TransactionReceipt from './modals/TransactionReceipt';
 import Ricer from './build/Ricer.json';
@@ -25,7 +24,6 @@ import {
 } from './redux/actions/controlActions';
 
 const TableControls = () => {
-  const client = new NFTStorage({ token: process.env.REACT_APP_NFT_API_KEY });
   const [web3, setWeb3] = useState();
   const [ricer, setRicer] = useState();
   const [provider, setProvider] = useState();
@@ -171,7 +169,6 @@ const TableControls = () => {
     };
     //Send the metadata object to generate a cid on IPFS
     let metadataCid = await axios.post('http://localhost:5000/createmetadatacid', JSON.stringify(metadata));
-    // let metadataCid = await client.storeBlob(JSON.stringify(metadata));
     return metadataCid.data;
   };
 
