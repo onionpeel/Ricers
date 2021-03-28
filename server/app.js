@@ -12,6 +12,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.post('/test', (req, res) => {
+  res.send("This will appear if the server works")
+});
+
 //multer processes the blob data send from the client.  The blob data is stored on req.file.
 //multer is configured to handle a single file upload.
 const upload = multer();
