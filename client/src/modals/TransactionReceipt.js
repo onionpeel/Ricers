@@ -1,7 +1,6 @@
 import { Modal, Button } from 'react-bootstrap';
 
 const TransactionReceipt = (props) => {
-  console.log(props)
   return (
     <Modal
       {...props}

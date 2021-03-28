@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -13,5 +11,6 @@
     "@openzeppelin/contracts": "^3.4.1",
     "@truffle/hdwallet-provider": "^1.1.1",
     "dotenv": "^8.2.0"
-  }
+  },
+  "devDependencies": {}
 }

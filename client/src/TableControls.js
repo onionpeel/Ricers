@@ -116,33 +116,30 @@ const TableControls = () => {
     //Generate the cid for the user's .png file on IPFS
     let cid = await createPngCid(cidPath);
 
-    // let metadataCid = await createMetadataCid(cid);
-    //
-    //
-    // console.log('metadataCid: ', metadataCid)
-    // let mintedRicer = await ricer.methods.mintToken(accounts[0], metadataCid).send({from: currentMetaMaskAccount});
+    let metadataCid = await createMetadataCid(cid);
+
+    let mintedRicer = await ricer.methods.mintToken(accounts[0], metadataCid).send({from: currentMetaMaskAccount});
     // console.log('mintedRicerHash: ', mintedRicer);
-    //
-    // let tokenId = mintedRicer.events.Transfer.returnValues.tokenId;
+
+    let tokenId = mintedRicer.events.Transfer.returnValues.tokenId;
     // console.log(`tokenId: ${tokenId}`)
-    // let transactionHash = mintedRicer.transactionHash;
+    let transactionHash = mintedRicer.transactionHash;
     // console.log(transactionHash)
-    // let cidLink = `https://ipfs.io/ipfs/${cid}`;
-    // let metadataCidLink = `https://ipfs.io/ipfs/${metadataCid}`;
-    // let transactionHashLink = `https://rinkeby.etherscan.io/tx/${transactionHash}`;
+    let cidLink = `https://ipfs.io/ipfs/${cid}`;
+    let metadataCidLink = `https://ipfs.io/ipfs/${metadataCid}`;
+    let transactionHashLink = `https://rinkeby.etherscan.io/tx/${transactionHash}`;
     // console.log(`metadataCidLink: ${metadataCidLink}`)
     // console.log(`transactionHashLink: ${transactionHashLink}`)
-    //
-    // setModalShowData({
-    //   tokenId,
-    //   cidLink,
-    //   metadataCidLink,
-    //   transactionHashLink
-    // });
-    //
-    //
-    // setModalShow(true);
-    // setIsMinting(false);
+
+    setModalShowData({
+      tokenId,
+      cidLink,
+      metadataCidLink,
+      transactionHashLink
+    });
+    
+    setModalShow(true);
+    setIsMinting(false);
   };
 
 //Uses .png file path as input and returns a cid on IPFS of the .png file
