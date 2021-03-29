@@ -159,7 +159,7 @@ const TableControls = () => {
 
 
     console.log('before cid')
-    res = await axios.post('createimagecid', data);
+    let res = await axios.post('createimagecid', data);
     // let res = await axios.post('http://localhost:5000/createimagecid', data);
     console.log('after cid')
     //Return the content identifier for the .png file on IPFS
