@@ -21,6 +21,8 @@ app.post('/test', (req, res) => {
 const upload = multer();
 //Input is a blob of the user's .png file.  The buffer of that file is used to create a cid.  The cid is returned to the client.
 app.post('/createimagecid', upload.single('blob'), async (req, res) => {
+  console.log('cid route has been called')
+
   //Extract the buffer from the user's .png file.
   let imageBuffer = req.file.buffer;
   //Send the buffer to be pinned on IPFS using nft.storage
