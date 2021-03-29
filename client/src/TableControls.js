@@ -150,6 +150,8 @@ const TableControls = () => {
     const data = new FormData();
     data.append('blob', pngFile.data)
     let res = await axios.post('https://floating-lake-78271.herokuapp.com/createimagecid', data);
+    // let res = await axios.post('http://localhost:5000/createimagecid', data);
+
     //Return the content identifier for the .png file on IPFS
     return res.data;
   };
@@ -166,7 +168,8 @@ const TableControls = () => {
     };
     //Send the metadata object to generate a cid on IPFS
     let metadataCid = await axios.post('https://floating-lake-78271.herokuapp.com/createmetadatacid', JSON.stringify(metadata));
-    console.log('meta: ', metadataCid)
+    // let metadataCid = await axios.post('http://localhost:5000/createmetadatacid', JSON.stringify(metadata));
+
     return metadataCid.data;
   };
 

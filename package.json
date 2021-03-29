@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server/app.js"
+    "heroku-prebuild": "cd server && npm install",
+    "start": "cd server && npm start"
   },
   "keywords": [],
   "author": "",
