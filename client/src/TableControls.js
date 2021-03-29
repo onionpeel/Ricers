@@ -112,7 +112,7 @@ const TableControls = () => {
 
     setIsMinting(true);
     //Generate the path to the .png file selected by the user
-    let cidPath = require('./images/'+storedPng.storedPngAsString+'.png').default;
+    let cidPath = require('../public/images/'+storedPng.storedPngAsString+'.png').default;
     //Generate the cid for the user's .png file on IPFS
     let cid = await createPngCid(cidPath);
     //Generate a cid for the metadata of the NFT and set it on IPFS
@@ -146,6 +146,8 @@ const TableControls = () => {
     const data = new FormData();
     data.append('blob', pngFile.data)
     let res = await axios.post('createimagecid', data);
+    // let res = await axios.post('http://localhost:5000/createimagecid', data);
+
     //Return the content identifier for the .png file on IPFS
     return res.data;
   };
@@ -162,6 +164,8 @@ const TableControls = () => {
     };
     //Send the metadata object to generate a cid on IPFS
     let metadataCid = await axios.post('createmetadatacid', JSON.stringify(metadata));
+    // let metadataCid = await axios.post('http://localhost:5000/createmetadatacid', JSON.stringify(metadata));
+
     return metadataCid.data;
   };
 
@@ -417,7 +421,7 @@ const TableControls = () => {
           </Col>
 
           <Col lg="9" sm="9" xs="9">
-              <img className="body carImage" src={require('./images/'+storedPng.storedPngAsString+'.png').default} alt="car"></img>
+              <img className="body carImage" src={require('../public/images/'+storedPng.storedPngAsString+'.png').default} alt="car"></img>
           </Col>
         </Row>
       </Container>
