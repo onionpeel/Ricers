@@ -115,22 +115,18 @@ const TableControls = () => {
     let cidPath = require('./images/'+storedPng.storedPngAsString+'.png').default;
     //Generate the cid for the user's .png file on IPFS
     let cid = await createPngCid(cidPath);
-
+    //Generate a cid for the metadata of the NFT and set it on IPFS
     let metadataCid = await createMetadataCid(cid);
-
+    //Mint the NFT on the blockchain by using the metadata cid and the address of the user currently signed into MetaMask
     let mintedRicer = await ricer.methods.mintToken(accounts[0], metadataCid).send({from: currentMetaMaskAccount});
-    // console.log('mintedRicerHash: ', mintedRicer);
-
+    //Get token id and transaction hash from the transaction receipt
     let tokenId = mintedRicer.events.Transfer.returnValues.tokenId;
-    // console.log(`tokenId: ${tokenId}`)
     let transactionHash = mintedRicer.transactionHash;
-    // console.log(transactionHash)
+    //Create links to display NFT data
     let cidLink = `https://ipfs.io/ipfs/${cid}`;
     let metadataCidLink = `https://ipfs.io/ipfs/${metadataCid}`;
     let transactionHashLink = `https://rinkeby.etherscan.io/tx/${transactionHash}`;
-    // console.log(`metadataCidLink: ${metadataCidLink}`)
-    // console.log(`transactionHashLink: ${transactionHashLink}`)
-
+    //Set state variables
     setModalShowData({
       tokenId,
       cidLink,
@@ -149,19 +145,7 @@ const TableControls = () => {
     //Convert the .png file to a blob and send it to the backend
     const data = new FormData();
     data.append('blob', pngFile.data)
-
-    // console.log('before cid')
-    // let res = await axios.post('test', {a: 'this is a test', b: 'random object'});
-    // console.log('res.data: ', res.data);
-    // console.log('after cid')
-
-
-
-
-    console.log('before cid')
     let res = await axios.post('createimagecid', data);
-    // let res = await axios.post('http://localhost:5000/createimagecid', data);
-    console.log('after cid')
     //Return the content identifier for the .png file on IPFS
     return res.data;
   };
@@ -176,14 +160,8 @@ const TableControls = () => {
       rims,
       stickers
     };
-
-    console.log('before meta')
     //Send the metadata object to generate a cid on IPFS
     let metadataCid = await axios.post('createmetadatacid', JSON.stringify(metadata));
-    // let metadataCid = await axios.post('http://localhost:5000/createmetadatacid', JSON.stringify(metadata));
-
-    console.log('after meta')
-
     return metadataCid.data;
   };
 
