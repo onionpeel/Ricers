@@ -19,9 +19,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-// app.get('/createimagecid', (req, res) => {
-//   res.send("This will appear if the server works")
-// });
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));
@@ -30,6 +27,16 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
 }
+
+app.post('/test', (req, res) => {
+  console.log(req.body);
+  let obj = {
+    newA: req.body.a,
+    newB: req.body.b
+  };
+  res.send(obj);
+});
+
 
 //multer processes the blob data send from the client.  The blob data is stored on req.file.
 //multer is configured to handle a single file upload.
