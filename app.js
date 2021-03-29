@@ -47,14 +47,15 @@ app.post('/createimagecid', upload.single('blob'), async (req, res) => {
 
   //Extract the buffer from the user's .png file.
   let imageBuffer = req.file.buffer;
+  console.log(imageBuffer)
   //Send the buffer to be pinned on IPFS using nft.storage
-  let cid = await axios.post('https://nft.storage/api/upload', imageBuffer, {
-    headers: {
-        'Authorization': `Bearer ${process.env.NFT_STORAGE_API_KEY}`
-    }
-  });
+  // let cid = await axios.post('https://nft.storage/api/upload', imageBuffer, {
+  //   headers: {
+  //       'Authorization': `Bearer ${process.env.NFT_STORAGE_API_KEY}`
+  //   }
+  // });
   //Return the content identifier to the client
-  res.send(cid.data.value.cid);
+  // res.send(cid.data.value.cid);
 });
 
 app.post('/createmetadatacid', async (req, res) => {
