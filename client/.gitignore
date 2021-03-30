@@ -2,7 +2,6 @@
 
 .env
 
-/public/images
 
 # dependencies
 /node_modules
