@@ -24,7 +24,6 @@ import {
 } from './redux/actions/controlActions';
 
 const TableControls = () => {
-  const [web3, setWeb3] = useState();
   const [ricer, setRicer] = useState();
   const [provider, setProvider] = useState();
   const [currentMetaMaskAccount, setCurrentMetaMaskAccount] = useState(null);
@@ -54,14 +53,13 @@ const TableControls = () => {
           return;
         };
 
-        let web3Init = new Web3(provider);
-        setWeb3(web3Init);
+        let web3 = new Web3(provider);
 
         //create ricer instance to interact with deployed Ricer contract
-        const networkId = await web3Init.eth.net.getId();
+        const networkId = await web3.eth.net.getId();
         const deploymentNetwork = Ricer.networks[networkId];
         if (deploymentNetwork !== undefined) {
-          const deployedRicer = new web3Init.eth.Contract(
+          const deployedRicer = new web3.eth.Contract(
             Ricer.abi,
             deploymentNetwork.address
           );
@@ -91,7 +89,7 @@ const TableControls = () => {
     } else if (accounts[0] !== currentMetaMaskAccount) {
       setCurrentMetaMaskAccount(accounts[0]);
       setIsConnected(true);
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
@@ -101,41 +99,50 @@ const TableControls = () => {
   };
 
   const handleOnMint = async () => {
-    //Ensure that the user is signed in with MetaMask
-    let accounts = await provider.request({ method: 'eth_accounts' });
-    if (accounts.length === 0) {
-      alert('Please connect using MetaMask');
-      setCurrentMetaMaskAccount(null);
-      setIsConnected(false);
-      return;
+    try {
+      //Ensure that the user is signed in with MetaMask
+      let accounts = await provider.request({ method: 'eth_accounts' });
+      if (accounts.length === 0) {
+        alert('Please connect using MetaMask');
+        setCurrentMetaMaskAccount(null);
+        setIsConnected(false);
+        return;
+      };
+
+      setIsMinting(true);
+      //Generate the path to the .png file selected by the user
+      //Development:
+      // let cidPath = require(`../public/images/${storedPng.storedPngAsString}.png`).default;
+      //Production:
+      let cidPath = `${process.env.PUBLIC_URL}/images/${storedPng.storedPngAsString}.png`;
+
+      //Generate the cid for the user's .png file on IPFS
+      let cid = await createPngCid(cidPath);
+      //Generate a cid for the metadata of the NFT and set it on IPFS
+      let metadataCid = await createMetadataCid(cid);
+      //Mint the NFT on the blockchain by using the metadata cid and the address of the user currently signed into MetaMask
+      let mintedRicer = await ricer.methods.mintToken(accounts[0], metadataCid).send({from: currentMetaMaskAccount});
+      //Get token id and transaction hash from the transaction receipt
+      let tokenId = mintedRicer.events.Transfer.returnValues.tokenId;
+      let transactionHash = mintedRicer.transactionHash;
+      //Create links to display NFT data
+      let cidLink = `https://ipfs.io/ipfs/${cid}`;
+      let metadataCidLink = `https://ipfs.io/ipfs/${metadataCid}`;
+      let transactionHashLink = `https://rinkeby.etherscan.io/tx/${transactionHash}`;
+      //Set state variables
+      setModalShowData({
+        tokenId,
+        cidLink,
+        metadataCidLink,
+        transactionHashLink
+      });
+
+      setModalShow(true);
+      setIsMinting(false);
+    } catch (error) {
+        setIsMinting(false);
+        alert('Please check your MetaMask account and refresh your browser');
     };
-
-    setIsMinting(true);
-    //Generate the path to the .png file selected by the user
-    let cidPath = require('../public/images/'+storedPng.storedPngAsString+'.png').default;
-    //Generate the cid for the user's .png file on IPFS
-    let cid = await createPngCid(cidPath);
-    //Generate a cid for the metadata of the NFT and set it on IPFS
-    let metadataCid = await createMetadataCid(cid);
-    //Mint the NFT on the blockchain by using the metadata cid and the address of the user currently signed into MetaMask
-    let mintedRicer = await ricer.methods.mintToken(accounts[0], metadataCid).send({from: currentMetaMaskAccount});
-    //Get token id and transaction hash from the transaction receipt
-    let tokenId = mintedRicer.events.Transfer.returnValues.tokenId;
-    let transactionHash = mintedRicer.transactionHash;
-    //Create links to display NFT data
-    let cidLink = `https://ipfs.io/ipfs/${cid}`;
-    let metadataCidLink = `https://ipfs.io/ipfs/${metadataCid}`;
-    let transactionHashLink = `https://rinkeby.etherscan.io/tx/${transactionHash}`;
-    //Set state variables
-    setModalShowData({
-      tokenId,
-      cidLink,
-      metadataCidLink,
-      transactionHashLink
-    });
-
-    setModalShow(true);
-    setIsMinting(false);
   };
 
 //Uses .png file path as input and returns a cid on IPFS of the .png file
@@ -144,10 +151,17 @@ const TableControls = () => {
     let pngFile = await axios.get(pngPath, {responseType: 'blob'});
     //Convert the .png file to a blob and send it to the backend
     const data = new FormData();
-    data.append('blob', pngFile.data)
-    let res = await axios.post('https://desolate-dusk-16956.herokuapp.com/createimagecid', data);
-    // let res = await axios.post('createimagecid', data);
-    // let res = await axios.post('http://localhost:5000/createimagecid', data);
+    data.append('blob', pngFile.data);
+
+    // Development
+    // let res = await axios.post(
+    //   'http://localhost:5000/createimagecid',
+    //   data);
+
+    //Production
+    let res = await axios.post(
+      'https://desolate-dusk-16956.herokuapp.com/createimagecid',
+      data);
 
     //Return the content identifier for the .png file on IPFS
     return res.data;
@@ -164,9 +178,17 @@ const TableControls = () => {
       stickers
     };
     //Send the metadata object to generate a cid on IPFS
-    let metadataCid = await axios.post('https://desolate-dusk-16956.herokuapp.com/createmetadatacid', JSON.stringify(metadata));
-    // let metadataCid = await axios.post('createmetadatacid', JSON.stringify(metadata));
-    // let metadataCid = await axios.post('http://localhost:5000/createmetadatacid', JSON.stringify(metadata));
+    //Development
+    // let metadataCid = await axios.post(
+    //   'http://localhost:5000/createmetadatacid',
+    //   JSON.stringify(metadata)
+    // );
+
+    //Production
+    let metadataCid = await axios.post(
+      'https://desolate-dusk-16956.herokuapp.com/createmetadatacid',
+      JSON.stringify(metadata)
+    );
 
     return metadataCid.data;
   };
@@ -422,9 +444,22 @@ const TableControls = () => {
             />
           </Col>
 
+          {/*Development
           <Col lg="9" sm="9" xs="9">
-              <img className="body carImage" src={require('../public/images/'+storedPng.storedPngAsString+'.png').default} alt="car"></img>
+              <img
+                className="body carImage"
+                src={require(`../public/images/${storedPng.storedPngAsString}.png`).default}
+                alt="car"></img>
           </Col>
+          */}
+
+          {/*Production*/}
+          <Col lg="9" sm="9" xs="9">
+              <img
+                className="body carImage"
+                src={`${process.env.PUBLIC_URL}/images/${storedPng.storedPngAsString}.png`}
+                alt="car"></img>
+          </Col>        
         </Row>
       </Container>
   );
